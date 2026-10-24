@@ -10,6 +10,7 @@ export interface PersonalInfo {
   bio: string;
   avatarUrl: string;
   avatarBackUrl?: string;
+  resumeUrl?: string;
   quoteImageUrl: string;
   quote: string;
   values: string[];

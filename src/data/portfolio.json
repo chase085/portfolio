@@ -11,6 +11,7 @@
     "bio": "Write a short bio about yourself here. What do you do, what are you passionate about?",
     "avatarUrl": "/your-repo-name/images/avatar.svg",
     "avatarBackUrl": "/your-repo-name/images/avatar-back.svg",
+    "resumeUrl": "",
     "quoteImageUrl": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1080",
     "quote": "Your Favorite Quote",
     "values": [
