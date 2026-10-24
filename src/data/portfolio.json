@@ -8,9 +8,16 @@
     "showTagline": true,
     "location": "Sta. Lucia Magarao Camarines Sur",
     "email": "your.email@example.com",
+<<<<<<< HEAD
     "bio": "Networking ONLY.",
     "avatarUrl": "/public/images/pic.jpg",
     "avatarBackUrl": "/public/images/pic.jpg",
+=======
+    "bio": "Write a short bio about yourself here. What do you do, what are you passionate about?",
+    "avatarUrl": "/your-repo-name/images/avatar.svg",
+    "avatarBackUrl": "/your-repo-name/images/avatar-back.svg",
+    "resumeUrl": "",
+>>>>>>> 526f0ce7a3433b106e48a553044de7d76f0ae004
     "quoteImageUrl": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1080",
     "quote": "Your Favorite Quote",
     "values": [

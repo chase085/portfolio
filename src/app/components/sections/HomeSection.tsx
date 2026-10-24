@@ -153,8 +153,9 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
           {/* Actions row */}
           <div className="flex flex-wrap items-center gap-2 mb-6">
             {/* Resume view */}
+            {personalInfo.resumeUrl && (
             <a
-              href={`${import.meta.env.BASE_URL}files/resume.pdf`}
+              href={personalInfo.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 no-underline cursor-pointer"
@@ -180,6 +181,7 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
               <Eye size={13} />
               Resume
             </a>
+            )}
 
             {/* Social icon buttons */}
             {visibleSocials.map((s, i) => {

@@ -66,6 +66,15 @@ export function PersonalInfoEditor({ personalInfo, socialLinks, onChange }: Prop
         </Field>
       </div>
 
+      <Field label="Resume URL">
+        <input
+          style={inputStyle}
+          placeholder="https://example.com/resume.pdf or /files/resume.pdf"
+          value={personalInfo.resumeUrl ?? ""}
+          onChange={(e) => set({ resumeUrl: e.target.value })}
+        />
+      </Field>
+
       {/* Social Links */}
       <h3 style={{ fontSize: 15, fontWeight: 600, marginTop: 24, marginBottom: 12 }}>Social Links</h3>
       {socialLinks.map((s, i) => (
