@@ -1,16 +1,16 @@
 {
   "personalInfo": {
-    "name": "Your Name",
-    "firstName": "Your",
-    "lastName": "Name",
+    "name": "JOEL BALON",
+    "firstName": "JOEL",
+    "lastName": "BALON",
     "title": "Your Title",
-    "tagline": "Innovate • Build • Impact",
+    "tagline": "CODE• CODE • CODE",
     "showTagline": true,
-    "location": "Your City, Country",
+    "location": "Sta. Lucia Magarao Camarines Sur",
     "email": "your.email@example.com",
-    "bio": "Write a short bio about yourself here. What do you do, what are you passionate about?",
-    "avatarUrl": "/your-repo-name/images/avatar.svg",
-    "avatarBackUrl": "/your-repo-name/images/avatar-back.svg",
+    "bio": "Networking ONLY.",
+    "avatarUrl": "/public/images/pic.jpg",
+    "avatarBackUrl": "/public/images/pic.jpg",
     "quoteImageUrl": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1080",
     "quote": "Your Favorite Quote",
     "values": [
@@ -44,19 +44,19 @@
   "socialLinks": [
     {
       "platform": "github",
-      "url": "https://github.com/your-username",
+      "url": "https://github.com/chase085",
       "isVisible": true,
       "order": 0
     },
     {
       "platform": "linkedin",
-      "url": "https://www.linkedin.com/in/your-profile/",
+      "url": "in/joel-balon-25188837a",
       "isVisible": true,
       "order": 1
     },
     {
       "platform": "email",
-      "url": "mailto:your.email@example.com",
+      "url": "mailto:balonjoel22@gmail.com",
       "isVisible": true,
       "order": 2
     }
