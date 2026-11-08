@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
-import { MapPin, Eye, Mail } from "lucide-react";
+import { lazy, Suspense, useState, useEffect, useRef } from "react";
+import { MapPin, Eye, Mail, X } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "../icons";
 import { PillBadge } from "../PillBadge";
 import { useTheme } from "@/app/context/ThemeContext";
 import { resolveAssetUrl } from "@/lib/assetUrl";
 import type { PersonalInfo, SkillCategory, Experience, Education, SocialLink } from "@/types/portfolio";
+
+const ResumePdfPreview = lazy(() =>
+  import("../ResumePdfPreview").then((module) => ({ default: module.ResumePdfPreview }))
+);
 
 interface HomeSectionProps {
   personalInfo: PersonalInfo;
@@ -57,6 +61,8 @@ const cardSurface: React.CSSProperties = {
 
 export function HomeSection({ personalInfo, skillCategories, experiences, education, socialLinks }: HomeSectionProps) {
   const [activeTab, setActiveTab] = useState<"experience" | "education">("experience");
+  const [resumeOpen, setResumeOpen] = useState(false);
+  const resumeCloseButton = useRef<HTMLButtonElement>(null);
   const { theme } = useTheme();
 
   // dark mode → flipped (avatarThree visible), light mode → not flipped (avatarTwo visible)
@@ -68,6 +74,26 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
 
   const avatarFront = resolveAssetUrl(personalInfo.avatarUrl);
   const avatarBack = resolveAssetUrl(personalInfo.avatarBackUrl ?? personalInfo.avatarUrl);
+  const resumeUrl = personalInfo.resumeUrl ? resolveAssetUrl(personalInfo.resumeUrl) : "";
+
+  useEffect(() => {
+    if (!resumeOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setResumeOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+    resumeCloseButton.current?.focus();
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
+    };
+  }, [resumeOpen]);
 
   const visibleSocials = socialLinks
     .filter((s) => s.isVisible)
@@ -153,11 +179,10 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
           {/* Actions row */}
           <div className="flex flex-wrap items-center gap-2 mb-6">
             {/* Resume view */}
-            {personalInfo.resumeUrl && (
-            <a
-              href={personalInfo.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            {resumeUrl && (
+            <button
+              type="button"
+              onClick={() => setResumeOpen(true)}
               className="inline-flex items-center gap-1.5 no-underline cursor-pointer"
               style={{
                 background: "var(--pf-action-bg)",
@@ -168,6 +193,7 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
                 fontSize: 13,
                 fontWeight: 500,
                 transition: "all 0.2s",
+                fontFamily: "inherit",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = "var(--pf-action-border-hover)";
@@ -180,7 +206,7 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
             >
               <Eye size={13} />
               Resume
-            </a>
+            </button>
             )}
 
             {/* Social icon buttons */}
@@ -263,6 +289,47 @@ export function HomeSection({ personalInfo, skillCategories, experiences, educat
           </div>
         </div>
       </div>
+
+      {resumeOpen && (
+        <div
+          className="resume-viewer-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setResumeOpen(false);
+          }}
+        >
+          <section
+            className="resume-viewer"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="resume-viewer-title"
+          >
+            <header className="resume-viewer-header">
+              <div>
+                <p className="resume-viewer-eyebrow">PORTFOLIO</p>
+                <h2 id="resume-viewer-title">Resume</h2>
+              </div>
+              <button
+                ref={resumeCloseButton}
+                type="button"
+                onClick={() => setResumeOpen(false)}
+                className="resume-viewer-close"
+                aria-label="Close resume preview"
+              >
+                <X size={18} />
+              </button>
+            </header>
+            <Suspense
+              fallback={
+                <div className="resume-viewer-body">
+                  <div className="resume-pdf-status" role="status">Loading resume…</div>
+                </div>
+              }
+            >
+              <ResumePdfPreview url={resumeUrl} />
+            </Suspense>
+          </section>
+        </div>
+      )}
 
       {/* ── Skills ───────────────────────────────────────────── */}
       <div className="mb-16">

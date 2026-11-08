@@ -46,3 +46,143 @@
   -webkit-text-fill-color: transparent;
   animation: shimmer 4s linear infinite;
 }
+
+@keyframes resumeViewerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes resumeViewerEnter {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.resume-viewer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 12, 20, 0.62);
+  backdrop-filter: blur(10px);
+  animation: resumeViewerFadeIn 220ms ease-out both;
+}
+
+.resume-viewer {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 1000px);
+  height: min(88vh, 860px);
+  overflow: hidden;
+  border: 1px solid var(--pf-border-strong);
+  border-radius: 20px;
+  background: var(--pf-bg);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+  animation: resumeViewerEnter 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.resume-viewer-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--pf-divider);
+}
+
+.resume-viewer-eyebrow {
+  margin: 0 0 3px;
+  color: var(--pf-fg-4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+
+.resume-viewer-header h2 {
+  margin: 0;
+  color: var(--pf-fg);
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.resume-viewer-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--pf-border);
+  border-radius: 50%;
+  background: var(--pf-surface);
+  color: var(--pf-fg-2);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.resume-viewer-close:hover {
+  transform: rotate(90deg);
+  background: var(--pf-surface-hover);
+  color: var(--pf-fg);
+}
+
+.resume-viewer-body {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  background: var(--pf-surface);
+}
+
+.resume-pdf-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  min-height: 100%;
+  padding: 20px;
+}
+
+.resume-pdf-page {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: white;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.resume-pdf-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--pf-fg-3);
+  font-size: 13px;
+  text-align: center;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .resume-viewer-backdrop {
+    padding: 10px;
+  }
+
+  .resume-viewer {
+    width: 100%;
+    height: 92vh;
+    height: 92dvh;
+    border-radius: 16px;
+  }
+
+  .resume-viewer-header {
+    padding: 13px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-viewer-backdrop,
+  .resume-viewer {
+    animation-duration: 1ms;
+  }
+}

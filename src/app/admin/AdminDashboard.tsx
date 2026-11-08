@@ -205,6 +205,20 @@ export function AdminDashboard() {
             personalInfo={data.personalInfo}
             socialLinks={data.socialLinks}
             onChange={(personalInfo, socialLinks) => update({ personalInfo, socialLinks })}
+            onUploadResume={async (file) => {
+              const response = await fetch("/api/resume", {
+                method: "PUT",
+                headers: { "Content-Type": "application/pdf" },
+                body: file,
+              });
+              const result = (await response.json()) as { url?: string; error?: string };
+              if (!response.ok || !result.url) {
+                throw new Error(result.error ?? "Failed to upload resume.");
+              }
+              update({
+                personalInfo: { ...data.personalInfo, resumeUrl: result.url },
+              });
+            }}
           />
         )}
         {activeTab === "experience" && (

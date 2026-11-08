@@ -1,15 +1,41 @@
 import type { PersonalInfo, SocialLink } from "@/types/portfolio";
+import { useState } from "react";
+import { FileText } from "lucide-react";
 import { Field, inputStyle, cardStyle, Toggle } from "../components/AdminUI";
 
 interface Props {
   personalInfo: PersonalInfo;
   socialLinks: SocialLink[];
   onChange: (p: PersonalInfo, s: SocialLink[]) => void;
+  onUploadResume: (file: File) => Promise<void>;
 }
 
-export function PersonalInfoEditor({ personalInfo, socialLinks, onChange }: Props) {
+export function PersonalInfoEditor({ personalInfo, socialLinks, onChange, onUploadResume }: Props) {
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [resumeUploadError, setResumeUploadError] = useState("");
   const set = (partial: Partial<PersonalInfo>) =>
     onChange({ ...personalInfo, ...partial }, socialLinks);
+
+  const uploadResume = async (file: File) => {
+    setResumeUploadError("");
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      setResumeUploadError("Choose a PDF file.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setResumeUploadError("The PDF must be 10 MB or smaller.");
+      return;
+    }
+
+    setUploadingResume(true);
+    try {
+      await onUploadResume(file);
+    } catch (error) {
+      setResumeUploadError(error instanceof Error ? error.message : "Failed to upload resume.");
+    } finally {
+      setUploadingResume(false);
+    }
+  };
 
   const setSocial = (idx: number, partial: Partial<SocialLink>) => {
     const next = socialLinks.map((s, i) => (i === idx ? { ...s, ...partial } : s));
@@ -73,6 +99,46 @@ export function PersonalInfoEditor({ personalInfo, socialLinks, onChange }: Prop
           value={personalInfo.resumeUrl ?? ""}
           onChange={(e) => set({ resumeUrl: e.target.value })}
         />
+      </Field>
+
+      <Field label="Or upload a resume PDF">
+        <label
+          className="flex items-center gap-3 cursor-pointer"
+          style={{
+            ...inputStyle,
+            minHeight: 48,
+            borderStyle: "dashed",
+            opacity: uploadingResume ? 0.6 : 1,
+          }}
+        >
+          <FileText size={16} color="var(--adm-fg-subtle)" />
+          <span style={{ color: "var(--adm-fg-muted)", fontSize: 13 }}>
+            {uploadingResume
+              ? "Uploading resume…"
+              : personalInfo.resumeUrl
+                ? "Choose a new PDF to replace the current resume"
+                : "Choose a PDF file (10 MB max)"}
+          </span>
+          <input
+            type="file"
+            accept="application/pdf,.pdf"
+            disabled={uploadingResume}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void uploadResume(file);
+              event.target.value = "";
+            }}
+            style={{ display: "none" }}
+          />
+        </label>
+        {resumeUploadError && (
+          <p role="alert" style={{ color: "#ef4444", fontSize: 12, marginTop: 8 }}>
+            {resumeUploadError}
+          </p>
+        )}
+        <p style={{ color: "var(--adm-fg-subtle)", fontSize: 12, marginTop: 8 }}>
+          The uploaded file is saved to your project. Click Save to publish its URL.
+        </p>
       </Field>
 
       {/* Social Links */}

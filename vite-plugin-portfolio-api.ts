@@ -4,11 +4,68 @@ import path from "node:path";
 
 const JSON_PATH = path.resolve("src/data/portfolio.json");
 const BLOG_DIR = path.resolve("src/data/blog");
+const RESUME_PATH = path.resolve("public/files/resume.pdf");
+const MAX_RESUME_SIZE = 10 * 1024 * 1024;
 
 export function portfolioApi(): Plugin {
   return {
     name: "portfolio-api",
     configureServer(server) {
+      server.middlewares.use("/api/resume", (req, res) => {
+        res.setHeader("Content-Type", "application/json");
+
+        if (req.method !== "PUT") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        if (!req.headers["content-type"]?.startsWith("application/pdf")) {
+          res.statusCode = 415;
+          res.end(JSON.stringify({ error: "Resume must be a PDF" }));
+          return;
+        }
+
+        const chunks: Buffer[] = [];
+        let size = 0;
+        let tooLarge = false;
+
+        req.on("data", (chunk: Buffer) => {
+          size += chunk.length;
+          if (size > MAX_RESUME_SIZE) {
+            tooLarge = true;
+            return;
+          }
+          if (!tooLarge) chunks.push(chunk);
+        });
+
+        req.on("end", () => {
+          if (tooLarge) {
+            res.statusCode = 413;
+            res.end(JSON.stringify({ error: "Resume must be 10 MB or smaller" }));
+            return;
+          }
+
+          const file = Buffer.concat(chunks);
+          if (!file.subarray(0, 1024).includes(Buffer.from("%PDF-"))) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "Uploaded file is not a valid PDF" }));
+            return;
+          }
+
+          try {
+            fs.mkdirSync(path.dirname(RESUME_PATH), { recursive: true });
+            fs.writeFileSync(RESUME_PATH, file);
+            res.statusCode = 200;
+            res.end(JSON.stringify({ url: "/files/resume.pdf" }));
+          } catch (error) {
+            console.error("Failed to save resume:", error);
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: "Failed to save resume" }));
+          }
+        });
+      });
+
       // ── Blog API ──────────────────────────────────────────────────
       server.middlewares.use("/api/blog", (req, res) => {
         res.setHeader("Content-Type", "application/json");
